@@ -42,7 +42,8 @@ $(function () {
 
         function reconnect() {
             var token = $(".codewizards-game-token").text();
-            var url = "http://russianaicup.ru/boombox/data/games/" + token;
+            // var url = "http://russianaicup.ru/boombox/data/games/" + token;
+            var url = "boombox/" + token;
             player.connect(url);
         }
 
