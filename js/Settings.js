@@ -9,7 +9,7 @@ Settings.get = function (name, defaultValue) {
     var result = localStorage.getItem(name);
     if (result === null) {
         if (defaultValue == undefined) {
-            throw new QException("No default value specified");
+            throw new Error("No default value specified");
         } else {
             result = defaultValue;
         }

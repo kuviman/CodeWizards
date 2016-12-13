@@ -15,8 +15,12 @@ function Player() {
 }
 
 var model;
-QE.StaticModel.load("models/PineTree/PineTree.sm", function (res) {
+StaticModel.load("models/PineTree/PineTree.sm", function (res) {
     model = res;
+});
+var texture;
+QE.loadTexture("models/PineTree/PineTree_1.png", function (res) {
+    texture = res;
 });
 
 Player.prototype = {
@@ -40,7 +44,7 @@ Player.prototype = {
         this.$tickCount.text(this.parser.totalTickCount);
         this.stats.update();
 
-        model.render();
+        model.render(texture);
     },
     connect: function (url, metaUrl) {
         if (this.parser) {
