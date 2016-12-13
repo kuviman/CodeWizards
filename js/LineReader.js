@@ -8,60 +8,79 @@ function LineReader(url, lineHandler) {
     this.onDownloaded = undefined;
     this.request = new XMLHttpRequest();
     this.request.open("GET", this.url, true);
-    this.sentLines = false;
     this.linesBuffer = [];
-    this.request.onreadystatechange = function () {
-        reader.getLines();
-    };
+    this.updateInterval = 1000;
+    this.readLineInterval = 0;
+    this.downloaded = false;
+    this.aborted = false;
+    setTimeout(function () {
+        reader.update();
+    }, this.updateInterval);
+    setTimeout(function () {
+        reader.readLines();
+    }, this.readLineInterval);
     this.request.send();
 }
 LineReader.prototype = {
     constructor: LineReader,
-    getLines: function () {
-        if (!this.request) {
+    update: function () {
+        if (this.aborted) {
             return;
         }
-        while (this.linesBuffer.length < this.lineChunkSize && this.lastCheckedPos < this.request.responseText.length) {
-            if (this.request.responseText[this.lastCheckedPos] == '\n') {
-                var currentLine = this.request.responseText.substr(this.lineStartPos, this.lastCheckedPos - this.lineStartPos);
+        this.responseText = this.request.responseText;
+        if (this.request.readyState == XMLHttpRequest.DONE) {
+            if (this.onDownloaded) {
+                this.onDownloaded();
+                this.downloaded = true;
+                delete this.onDownloaded;
+            }
+            delete this.request;
+        } else {
+            var reader = this;
+            setTimeout(function () {
+                reader.update();
+            }, this.updateInterval);
+        }
+    },
+    readLines: function () {
+        if (this.aborted) {
+            return;
+        }
+        var responseText = this.responseText;
+        if (!responseText) {
+            var reader = this;
+            setTimeout(function () {
+                reader.readLines();
+            }, this.readLineInterval);
+            return;
+        }
+        while (this.linesBuffer.length < this.lineChunkSize && this.lastCheckedPos < responseText.length) {
+            if (responseText[this.lastCheckedPos] == '\n') {
+                var currentLine = responseText.substr(this.lineStartPos, this.lastCheckedPos - this.lineStartPos);
                 this.linesBuffer.push(currentLine);
                 this.lineStartPos = this.lastCheckedPos + 1;
             }
             this.lastCheckedPos++;
         }
 
-        if (this.request.readyState == XMLHttpRequest.DONE) {
-            if (this.onDownloaded) {
-                this.onDownloaded();
-                this.onDownloaded = undefined;
-            }
-            if (this.lastCheckedPos == this.request.responseText.length) {
-                this.request.onreadystatechange = undefined;
-                this.request = undefined;
-            }
-        }
-
-        var reader = this;
-        if (this.linesBuffer.length > 0 && !this.sentLines) {
-            this.sentLines = true;
-            setTimeout(function () {
-                reader.sendLines();
-            }, 0);
-        }
-    },
-    sendLines: function () {
-        this.sentLines = false;
-        if (this.linesBuffer.length > 0) {
+        if (this.linesBuffer.length == this.lineChunkSize || this.downloaded) {
             for (var i = 0, l = this.linesBuffer.length; i < l; i++) {
                 if (this.lineHandler) {
                     this.lineHandler(this.linesBuffer[i]);
                 }
             }
             this.linesBuffer = [];
-            this.getLines();
+        }
+
+        if (this.lastCheckedPos != responseText.length || !this.downloaded) {
+            var reader = this;
+            setTimeout(function () {
+                reader.readLines();
+            }, this.readLineInterval);
         }
     },
     disconnect: function () {
+        this.aborted = true;
         this.onDownloaded = undefined;
         this.lineHandler = undefined;
         if (this.request) {

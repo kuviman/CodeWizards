@@ -9,7 +9,7 @@ function Player() {
     this.$tickCount = $screen.find(".tickCount");
     this.$fps = $screen.find(".fps");
     this.$controls = $screen.find(".controls");
-    this.$position = $screen.find(".timeline .position");
+    this.$position = this.$controls.find(".timeline .position");
     this.currentFrame = 0;
     this.timeTillNextFrame = 0;
     QE.alpha = 0;

@@ -13,15 +13,15 @@ function loadResources() {
     function loadAnotherResource() {
         var resource = new QE.Resource();
         var interval = setInterval(function () {
-            resource.progress += 0.1;
+            resource.progress += 1;
             if (resource.progress >= 1) {
                 resource.confirmLoaded();
                 clearInterval(interval);
             }
-        }, Math.floor(Math.random() * 50 + 50));
+        }, 0);
     }
 
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 1; i++) {
         loadAnotherResource();
     }
 }
@@ -42,8 +42,8 @@ $(function () {
 
         function reconnect() {
             var token = $(".codewizards-game-token").text();
-            // var url = "http://russianaicup.ru/boombox/data/games/" + token;
-            var url = "boombox/" + token;
+            var url = "http://russianaicup.ru/boombox/data/games/" + token;
+            // var url = "boombox/" + token;
             player.connect(url);
         }
 
