@@ -1,4 +1,5 @@
 function error(reasonList) {
+    QE.cancelFullscreen();
     var $codewizards = $(".codewizards-player");
     $codewizards.find(".loading-screen").hide();
     $codewizards.find(".game-screen").hide();
@@ -28,9 +29,6 @@ function loadResources() {
 
 $(function () {
     var $codewizards = $(".codewizards-player");
-    $codewizards.find(".fullscreen-button").click(function () {
-        QE.toggleFullScreen($codewizards[0]);
-    });
     if (QE.initialized) {
         loadResources();
         var $progressBar = $codewizards.find(".resource-loading-progress-bar");
@@ -68,8 +66,21 @@ $(function () {
             $gameScreen.show();
             QE.run(function (deltaTime) {
                 player.render(deltaTime);
-            })
+            });
         };
+
+        $codewizards.find(".fullscreen-button").click(function () {
+            QE.toggleFullScreen($codewizards[0]);
+        });
+
+        var $settings = $codewizards.find(".settings");
+        $codewizards.find(".settings-button").click(function () {
+            $settings.toggle();
+        });
+
+        Settings.setupCheckbox($settings, "limitFPS", function (limitFPS) {
+            QE.requestAnimationFrame = limitFPS;
+        }, true);
     } else {
         error(QE.failReason);
     }

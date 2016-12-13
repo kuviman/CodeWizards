@@ -110,14 +110,6 @@
     text-shadow: 1px 1px black;
 }
 
-.codewizards-player .play-stop-button {
-    left: 10px;
-}
-
-.codewizards-player .fullscreen-button {
-    right: 10px;
-}
-
 .codewizards-player .control-button {
     text-align: center;
     width: 24px;
@@ -129,7 +121,7 @@
 }
 
 .codewizards-player .control-button .glyphicon {
-    line-height: 12px;
+    line-height: 13px;
 }
 
 .codewizards-player .control-button:hover {
@@ -139,5 +131,39 @@
 }
 
 .codewizards-player .control-button:hover .glyphicon {
-    line-height: 20px;
+    line-height: 22px;
+}
+
+.codewizards-player .play-stop-button {
+    left: 10px;
+}
+
+.codewizards-player .fullscreen-button {
+    right: 10px;
+}
+
+.codewizards-player .settings-button {
+    right: 34px;
+}
+
+.codewizards-player .settings {
+    position: absolute;
+    right: 0;
+    bottom: 35px;
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 0 1em;
+    border-top-left-radius: 1em;
+    border: 2px solid dimgray;
+    box-shadow: 0 0 1em gray;
+    color: white;
+    width: 15em;
+}
+
+.codewizards-player .settings table {
+    width: 100%;
+}
+
+.codewizards-player input[type=checkbox] {
+    position: relative;
+    top: -2px;
 }

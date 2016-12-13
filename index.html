@@ -31,8 +31,9 @@
     <!-- CodeWizards -->
     <link href="css/codewizards.css" rel="stylesheet">
     <script src="js/LineReader.js"></script>
-    <script src="js/Parser.js"></script>
+    <script src="js/Settings.js"></script>
     <script src="js/CodeWizards.js"></script>
+    <script src="js/Parser.js"></script>
     <script src="js/Player.js"></script>
 </head>
 <body>
@@ -80,6 +81,9 @@
                             <div class="control-button fullscreen-button vertical-align">
                                 <span class="glyphicon glyphicon-fullscreen"></span>
                             </div>
+                            <div class="control-button settings-button vertical-align">
+                                <span class="glyphicon glyphicon-cog"></span>
+                            </div>
                             <div class="timeline">
                                 <div class="loaded"></div>
                                 <div class="position vertical-align"></div>
@@ -88,6 +92,16 @@
                                 <span class="currentTick">0</span>
                                 /
                                 <span class="tickCount">0</span>
+                            </div>
+                        </div>
+                        <div class="settings" style="display: none;">
+                            <div class="container-fluid">
+                                <table class=".table">
+                                    <tr>
+                                        <td><label for="limitFPS">Limit FPS</label></td>
+                                        <td><input type="checkbox" id="limitFPS"></td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                     </div>
