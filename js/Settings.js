@@ -1,5 +1,6 @@
 var Settings = {
-    CACHE_PREFIX: "CODEWIZARDS"
+    CACHE_PREFIX: "CODEWIZARDS",
+    HIDE_CONTROLS_DELAY_MS: 2000
 };
 
 Settings.get = function (name, defaultValue) {
