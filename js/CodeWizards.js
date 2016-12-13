@@ -10,27 +10,10 @@ function error(reasonList) {
     $failedScreen.show();
 }
 
-function loadResources() {
-    function loadAnotherResource() {
-        var resource = new QE.Resource();
-        var interval = setInterval(function () {
-            resource.progress += 1;
-            if (resource.progress >= 1) {
-                resource.confirmLoaded();
-                clearInterval(interval);
-            }
-        }, 0);
-    }
-
-    for (var i = 0; i < 1; i++) {
-        loadAnotherResource();
-    }
-}
-
+var jQueryResource = new QE.Resource();
 $(function () {
     var $codewizards = $(".codewizards-player");
     if (QE.initialized) {
-        loadResources();
         var $progressBar = $codewizards.find(".resource-loading-progress-bar");
         var $progress = $codewizards.find(".resource-loading-progress");
         QE.onResourceProgress = function (progress) {
@@ -44,7 +27,6 @@ $(function () {
         function reconnect() {
             var token = $(".codewizards-game-token").text();
             var url = "http://russianaicup.ru/boombox/data/games/" + token;
-            // var url = "boombox/" + token;
             player.connect(url);
         }
 
@@ -59,7 +41,22 @@ $(function () {
             return false;
         });
 
-        QE.onResourcesLoaded = function () {
+        var $controls = $codewizards.find(".controls");
+
+        $controls.find(".fullscreen-button").click(function () {
+            QE.toggleFullScreen($codewizards[0]);
+        });
+
+        var $settings = $controls.find(".settings");
+        $controls.find(".settings-button").click(function () {
+            $settings.fadeToggle(200);
+        });
+
+        Settings.setupCheckbox($settings, "limitFPS", function (limitFPS) {
+            QE.requestAnimationFrame = limitFPS;
+        }, true);
+
+        QE.onResourcesLoaded.push(function () {
             $codewizards.find(".loading-screen").hide();
             var $gameScreen = $codewizards.find(".game-screen");
             $gameScreen.prepend(QE.$canvas);
@@ -89,23 +86,9 @@ $(function () {
                     hideControls();
                 }
             });
-        };
-
-        var $controls = $codewizards.find(".controls");
-
-        $controls.find(".fullscreen-button").click(function () {
-            QE.toggleFullScreen($codewizards[0]);
         });
-
-        var $settings = $controls.find(".settings");
-        $controls.find(".settings-button").click(function () {
-            $settings.toggle();
-        });
-
-        Settings.setupCheckbox($settings, "limitFPS", function (limitFPS) {
-            QE.requestAnimationFrame = limitFPS;
-        }, true);
     } else {
         error(QE.failReason);
     }
+    jQueryResource.confirmLoaded();
 });

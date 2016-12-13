@@ -14,6 +14,11 @@ function Player() {
     QE.alpha = 0;
 }
 
+var model;
+QE.StaticModel.load("models/PineTree/PineTree.sm", function (res) {
+    model = res;
+});
+
 Player.prototype = {
     constructor: Player,
     render: function (deltaTime) {
@@ -34,6 +39,8 @@ Player.prototype = {
         this.$currentTick.text(this.currentFrame);
         this.$tickCount.text(this.parser.totalTickCount);
         this.stats.update();
+
+        model.render();
     },
     connect: function (url, metaUrl) {
         if (this.parser) {
