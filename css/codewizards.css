@@ -114,18 +114,30 @@
     left: 10px;
 }
 
+.codewizards-player .fullscreen-button {
+    right: 10px;
+}
+
 .codewizards-player .control-button {
     text-align: center;
     width: 24px;
     height: 16px;
     font-size: 16px;
-    line-height: 16px;
     color: white;
     cursor: pointer;
+    line-height: 16px;
+}
+
+.codewizards-player .control-button .glyphicon {
+    line-height: 12px;
 }
 
 .codewizards-player .control-button:hover {
     height: 24px;
     font-size: 24px;
     line-height: 24px;
+}
+
+.codewizards-player .control-button:hover .glyphicon {
+    line-height: 20px;
 }

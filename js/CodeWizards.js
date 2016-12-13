@@ -28,6 +28,9 @@ function loadResources() {
 
 $(function () {
     var $codewizards = $(".codewizards-player");
+    $codewizards.find(".fullscreen-button").click(function () {
+        QE.toggleFullScreen($codewizards[0]);
+    });
     if (QE.initialized) {
         loadResources();
         var $progressBar = $codewizards.find(".resource-loading-progress-bar");

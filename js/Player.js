@@ -7,7 +7,6 @@ function Player() {
     this.$downloaded = $screen.find(".timeline .downloaded");
     this.$currentTick = $screen.find(".currentTick");
     this.$tickCount = $screen.find(".tickCount");
-    this.$fps = $screen.find(".fps");
     this.$controls = $screen.find(".controls");
     this.$position = this.$controls.find(".timeline .position");
     this.currentFrame = 0;
@@ -31,7 +30,6 @@ Player.prototype = {
 
         this.$loaded.width(this.parser.progress * 100 + "%");
         this.$downloaded.width(this.parser.downloadProgress * 100 + "%");
-        this.$fps.text(Math.round(QE.getFPS()).toString());
         QE.alpha = Math.min(QE.alpha + deltaTime * 3, 1);
         this.$currentTick.text(this.currentFrame);
         this.$tickCount.text(this.parser.totalTickCount);
