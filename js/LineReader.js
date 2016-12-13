@@ -5,7 +5,7 @@ function LineReader(url, lineHandler) {
     this.lineHandler = lineHandler;
     this.lineStartPos = 0;
     this.lastCheckedPos = 0;
-    this.onDownloaded = undefined;
+    this.onDownloadedHandlers = [];
     this.request = new XMLHttpRequest();
     this.request.open("GET", this.url, true);
     this.linesBuffer = [];
@@ -29,11 +29,11 @@ LineReader.prototype = {
         }
         this.responseText = this.request.responseText;
         if (this.request.readyState == XMLHttpRequest.DONE) {
-            if (this.onDownloaded) {
-                this.onDownloaded();
-                this.downloaded = true;
-                delete this.onDownloaded;
+            for (var i = 0; i < this.onDownloadedHandlers.length; i++) {
+                this.onDownloadedHandlers[i]();
             }
+            this.onDownloadedHandlers = [];
+            this.downloaded = true;
             delete this.request;
         } else {
             var reader = this;
@@ -81,10 +81,13 @@ LineReader.prototype = {
     },
     disconnect: function () {
         this.aborted = true;
-        this.onDownloaded = undefined;
+        this.onDownloadedHandlers = [];
         this.lineHandler = undefined;
         if (this.request) {
             this.request.abort();
         }
+    },
+    onDownloaded: function (handler) {
+        this.onDownloadedHandlers.push(handler);
     }
 };

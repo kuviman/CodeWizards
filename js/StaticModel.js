@@ -14,6 +14,7 @@ if (QE.initialized) new function () {
     var program;
     QE.onResourcesLoaded.push(function () {
         program = QE.shaderProgram(vertexShader, fragmentShader);
+        window.staticModelProgram = program;
     });
 
     function StaticModel(array) {
@@ -38,10 +39,6 @@ if (QE.initialized) new function () {
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.uniform1i(QE.getUniformLocation(program, "texture"), 0);
-
-            var cameraMatrix = mat4.perspective(mat4.create(), Math.PI / 2, QE.canvas.width / QE.canvas.height, 0.1, 5000);
-            mat4.multiply(cameraMatrix, cameraMatrix, mat4.lookAt(mat4.create(), vec3.fromValues(1, 2, -1), vec3.create(), vec3.fromValues(0, 1, 0)));
-            gl.uniformMatrix4fv(QE.getUniformLocation(program, "projectionMatrix"), false, cameraMatrix);
 
             gl.drawArrays(gl.TRIANGLES, 0, this.count);
         }

@@ -5,9 +5,7 @@ function Parser(url, metaUrl) {
     }
     this.totalTickCount = 20000;
     this.fps = 60;
-    this.__defineGetter__("tickTime", function () {
-        return 1 / this.fps;
-    });
+    this.tickTime = 1 / this.fps;
     $.get(metaUrl, function (data) {
         var meta = JSON.parse(data);
         parser.totalTickCount = meta.frameCount;
@@ -16,9 +14,6 @@ function Parser(url, metaUrl) {
     this.loadedTickCount = 0;
     this.__defineGetter__("progress", function () {
         return this.loadedTickCount / this.totalTickCount;
-    });
-    this.__defineSetter__("onDownloaded", function (handler) {
-        this.reader.onDownloaded = handler;
     });
     this.__defineSetter__("lineChunkSize", function (chunkSize) {
         this.reader.lineChunkSize = chunkSize;
@@ -38,5 +33,8 @@ Parser.prototype = {
     },
     disconnect: function () {
         this.reader.disconnect();
+    },
+    onDownloaded: function (handler) {
+        this.reader.onDownloaded(handler);
     }
 };

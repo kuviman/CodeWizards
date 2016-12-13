@@ -6,6 +6,10 @@
     /*border: 1px solid black;*/
 }
 
+.codewizards-player.game-running {
+    background: none;
+}
+
 .codewizards-player .centered {
     position: absolute;
     top: 50%;
