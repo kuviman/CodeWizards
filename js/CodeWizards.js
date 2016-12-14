@@ -41,50 +41,14 @@ $(function () {
             return false;
         });
 
-        var $controls = $codewizards.find(".controls");
-
-        $controls.find(".fullscreen-button").click(function () {
-            QE.toggleFullScreen($codewizards[0]);
-        });
-
-        var $settings = $controls.find(".settings");
-        $controls.find(".settings-button").click(function () {
-            $settings.fadeToggle(200);
-        });
-
-        Settings.setupCheckbox($settings, "limitFPS", function (limitFPS) {
-            QE.requestAnimationFrame = limitFPS;
-        }, true);
-
         QE.onResourcesLoaded.push(function () {
             $codewizards.find(".loading-screen").hide();
             var $gameScreen = $codewizards.find(".game-screen");
             $gameScreen.prepend($(QE.canvas));
             $gameScreen.show();
 
-            function hideControls() {
-                $controls.animate({bottom: "-32px"}, 200);
-            }
-
-            hideControls();
-
-            var hideControlsTimeMs = undefined;
-
-            function showControls() {
-                $controls.animate({bottom: 0}, 200);
-                hideControlsTimeMs = Date.now() + Settings.HIDE_CONTROLS_DELAY_MS;
-            }
-
-            $codewizards.on("mousemove", function () {
-                showControls();
-            });
-
             QE.run(function (deltaTime) {
                 player.render(deltaTime);
-                if (hideControlsTimeMs !== undefined && Date.now() > hideControlsTimeMs) {
-                    hideControlsTimeMs = undefined;
-                    hideControls();
-                }
             }, function () {
                 player.updateHtml();
             });

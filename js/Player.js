@@ -1,4 +1,6 @@
 function Player() {
+    var player = this;
+
     this.$codewizards = $(".codewizards-player");
     var $screen = this.$codewizards.find(".game-screen");
     this.stats = new Stats();
@@ -12,6 +14,21 @@ function Player() {
     this.$position = this.$controls.find(".timeline .position");
     this.faded = false;
     QE.alpha = 0;
+    this.$controls.find(".fullscreen-button").click(function () {
+        QE.toggleFullScreen(player.$codewizards[0]);
+    });
+    this.$settings = this.$controls.find(".settings");
+    this.$controls.find(".settings-button").click(function () {
+        player.$settings.fadeToggle(200);
+    });
+    Settings.setupCheckbox(this.$settings, "limitFPS", function (limitFPS) {
+        QE.requestAnimationFrame = limitFPS;
+    }, true);
+    this.hideControlsTimeMs = undefined;
+    this.$codewizards.on("mousemove", function () {
+        player.showControls();
+    });
+    this.hideControls();
 
     this.cameraMatrix = mat4.create();
 }
@@ -81,6 +98,10 @@ Player.prototype = {
         this.$tickCount.text(this.parser.totalTickCount);
         this.$loaded.width(this.parser.progress * 100 + "%");
         this.$downloaded.width(this.parser.downloadProgress * 100 + "%");
+        if (this.hideControlsTimeMs !== undefined && Date.now() > this.hideControlsTimeMs) {
+            this.hideControlsTimeMs = undefined;
+            this.hideControls();
+        }
     },
     connect: function (url, metaUrl) {
         if (this.parser) {
@@ -94,5 +115,12 @@ Player.prototype = {
         });
         this.currentFrame = 0;
         this.timeTillNextFrame = 0;
+    },
+    hideControls: function () {
+        this.$controls.animate({bottom: "-32px"}, 200);
+    },
+    showControls: function () {
+        this.$controls.animate({bottom: 0}, 200);
+        this.hideControlsTimeMs = Date.now() + Settings.HIDE_CONTROLS_DELAY_MS;
     }
 };
