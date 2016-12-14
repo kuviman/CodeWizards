@@ -25,12 +25,12 @@ function Player() {
         QE.requestAnimationFrame = limitFPS;
     }, true);
     this.hideControlsTimeMs = undefined;
-    this.$codewizards.on("mousemove", function () {
+    this.$codewizards.on("mousemove mousedown touchstart", function () {
         player.showControls();
     });
     this.hideControls();
 
-    this.cameraMatrix = mat4.create();
+    this.camera = new Camera(this);
 }
 
 var model;
@@ -51,8 +51,9 @@ QE.loadTexture("models/PineTree/PineTree_3.png", function (res) {
 var pos = [];
 var scale = [];
 var tts = [];
-for (var i = 0; i < 100; i++) {
-    var v = vec2.fromValues(Math.random() * 50 - 25, Math.random() * 50 - 25);
+for (var i = 0; i < 1; i++) {
+    // var v = vec2.fromValues(Math.random() * 50 - 25, Math.random() * 50 - 25);
+    var v = vec2.fromValues(0, 0);
     pos.push(v);
     scale.push(Math.random() + 1);
     tts.push(Math.floor(Math.random() * 3));
@@ -82,10 +83,9 @@ Player.prototype = {
         }
         this.stats.update();
 
-        mat4.perspective(this.cameraMatrix, Math.PI / 2, QE.canvas.width / QE.canvas.height, 0.1, 5000);
-        mat4.multiply(this.cameraMatrix, this.cameraMatrix, mat4.lookAt(mat4.create(), vec3.fromValues(2, 20 + Math.sin(this.currentFrame / 60) * 5, -10), vec3.create(), vec3.fromValues(0, 1, 0)));
+        this.camera.update(deltaTime);
         QE.useProgram(staticModelProgram);
-        QE.glContext.uniformMatrix4fv(QE.getUniformLocation(staticModelProgram, "projectionMatrix"), false, this.cameraMatrix);
+        QE.glContext.uniformMatrix4fv(QE.getUniformLocation(staticModelProgram, "projectionMatrix"), false, this.camera.matrix);
         for (var i = 0, l = pos.length; i < l; i++) {
             QE.glContext.uniform2fv(QE.getUniformLocation(window.staticModelProgram, "position"), pos[i]);
             QE.glContext.uniform1f(QE.getUniformLocation(window.staticModelProgram, "scale"), scale[i]);
