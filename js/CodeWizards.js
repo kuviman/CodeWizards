@@ -85,6 +85,8 @@ $(function () {
                     hideControlsTimeMs = undefined;
                     hideControls();
                 }
+            }, function () {
+                player.updateHtml();
             });
         });
     } else {

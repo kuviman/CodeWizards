@@ -11,8 +11,9 @@ function Player() {
     this.$controls = $screen.find(".controls");
     this.$position = this.$controls.find(".timeline .position");
     this.faded = false;
-    this.nextCssUpdate = 0;
     QE.alpha = 0;
+
+    this.cameraMatrix = mat4.create();
 }
 
 var model;
@@ -55,16 +56,6 @@ Player.prototype = {
             // render frame
         }
 
-        this.nextCssUpdate -= deltaTime;
-        if (this.nextCssUpdate < 0) {
-            this.nextCssUpdate = 0.1;
-            this.$position.css("left", this.currentFrame * 100 / this.parser.totalTickCount + "%");
-            this.$currentTick.text(this.currentFrame);
-            this.$tickCount.text(this.parser.totalTickCount);
-            this.$loaded.width(this.parser.progress * 100 + "%");
-            this.$downloaded.width(this.parser.downloadProgress * 100 + "%");
-        }
-
         if (!this.faded) {
             QE.alpha = Math.min(QE.alpha + deltaTime * 3, 1);
             if (QE.alpha == 1) {
@@ -74,15 +65,22 @@ Player.prototype = {
         }
         this.stats.update();
 
-        var cameraMatrix = mat4.perspective(mat4.create(), Math.PI / 2, QE.canvas.width / QE.canvas.height, 0.1, 5000);
-        mat4.multiply(cameraMatrix, cameraMatrix, mat4.lookAt(mat4.create(), vec3.fromValues(2, 20 + Math.sin(this.currentFrame / 60) * 5, -10), vec3.create(), vec3.fromValues(0, 1, 0)));
+        mat4.perspective(this.cameraMatrix, Math.PI / 2, QE.canvas.width / QE.canvas.height, 0.1, 5000);
+        mat4.multiply(this.cameraMatrix, this.cameraMatrix, mat4.lookAt(mat4.create(), vec3.fromValues(2, 20 + Math.sin(this.currentFrame / 60) * 5, -10), vec3.create(), vec3.fromValues(0, 1, 0)));
         QE.useProgram(staticModelProgram);
-        QE.glContext.uniformMatrix4fv(QE.getUniformLocation(staticModelProgram, "projectionMatrix"), false, cameraMatrix);
+        QE.glContext.uniformMatrix4fv(QE.getUniformLocation(staticModelProgram, "projectionMatrix"), false, this.cameraMatrix);
         for (var i = 0, l = pos.length; i < l; i++) {
             QE.glContext.uniform2fv(QE.getUniformLocation(window.staticModelProgram, "position"), pos[i]);
             QE.glContext.uniform1f(QE.getUniformLocation(window.staticModelProgram, "scale"), scale[i]);
             model.render(textures[tts[i]]);
         }
+    },
+    updateHtml: function () {
+        this.$position.css("left", this.currentFrame * 100 / this.parser.totalTickCount + "%");
+        this.$currentTick.text(this.currentFrame);
+        this.$tickCount.text(this.parser.totalTickCount);
+        this.$loaded.width(this.parser.progress * 100 + "%");
+        this.$downloaded.width(this.parser.downloadProgress * 100 + "%");
     },
     connect: function (url, metaUrl) {
         if (this.parser) {
