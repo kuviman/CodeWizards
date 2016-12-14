@@ -59,7 +59,7 @@ $(function () {
         QE.onResourcesLoaded.push(function () {
             $codewizards.find(".loading-screen").hide();
             var $gameScreen = $codewizards.find(".game-screen");
-            $gameScreen.prepend(QE.$canvas);
+            $gameScreen.prepend($(QE.canvas));
             $gameScreen.show();
 
             function hideControls() {
