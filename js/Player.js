@@ -51,9 +51,8 @@ QE.loadTexture("models/PineTree/PineTree_3.png", function (res) {
 var pos = [];
 var scale = [];
 var tts = [];
-for (var i = 0; i < 1; i++) {
-    // var v = vec2.fromValues(Math.random() * 50 - 25, Math.random() * 50 - 25);
-    var v = vec2.fromValues(0, 0);
+for (var i = 0; i < 250; i++) {
+    var v = vec2.fromValues(Math.random() * 50 - 25, Math.random() * 50 - 25);
     pos.push(v);
     scale.push(Math.random() + 1);
     tts.push(Math.floor(Math.random() * 3));

@@ -80,6 +80,7 @@
     height: 3px;
     width: 100%;
     background-color: rgba(255, 0, 0, 0.2);
+    cursor: pointer;
 }
 
 .codewizards-player .timeline.downloaded {
