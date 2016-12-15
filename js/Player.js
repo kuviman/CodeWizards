@@ -12,6 +12,7 @@ function Player() {
     this.$loaded = this.$timeline.find(".timeline-loaded");
     this.$currentTick = this.$controls.find(".currentTick");
     this.$tickCount = this.$controls.find(".tickCount");
+
     this.faded = false;
     QE.alpha = 0;
     this.$controls.find(".fullscreen-button").click(function () {
@@ -27,6 +28,10 @@ function Player() {
     this.hideControlsTimeMs = undefined;
     this.$codewizards.on("mousemove mousedown touchstart", function () {
         player.showControls();
+    });
+    this.$timeline.on("click", function (e) {
+        player.currentFrame = Math.floor(player.parser.totalTickCount * e.offsetX / this.offsetWidth);
+        return false;
     });
     this.hideControls();
 
@@ -62,14 +67,15 @@ Player.prototype = {
     constructor: Player,
     render: function (deltaTime) {
         this.timeTillNextFrame += deltaTime;
-        var frameChanged = false;
         while (this.timeTillNextFrame >= this.parser.tickTime) {
-            this.currentFrame += 1;
-            this.timeTillNextFrame -= this.parser.tickTime;
-            frameChanged = true;
+            if (this.currentFrame + 1 < this.parser.loadedTickCount) {
+                this.currentFrame += 1;
+                this.timeTillNextFrame -= this.parser.tickTime;
+            } else {
+                this.timeTillNextFrame = 0;
+            }
         }
-        this.currentFrame = Math.min(this.currentFrame, this.parser.loadedTickCount - 1);
-        if (this.currentFrame >= 0) {
+        if (0 <= this.currentFrame && this.currentFrame < this.parser.loadedTickCount) {
             // render frame
         }
 
