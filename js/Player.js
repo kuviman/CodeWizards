@@ -2,16 +2,16 @@ function Player() {
     var player = this;
 
     this.$codewizards = $(".codewizards-player");
-    var $screen = this.$codewizards.find(".game-screen");
+    this.$screen = this.$codewizards.find(".game-screen");
     this.stats = new Stats();
-    var $stats = $(this.stats.dom).css("position", "absolute");
-    $screen.append($stats);
-    this.$loaded = $screen.find(".timeline .loaded");
-    this.$downloaded = $screen.find(".timeline .downloaded");
-    this.$currentTick = $screen.find(".currentTick");
-    this.$tickCount = $screen.find(".tickCount");
-    this.$controls = $screen.find(".controls");
-    this.$position = this.$controls.find(".timeline .position");
+    this.$stats = $(this.stats.dom).css("position", "absolute");
+    this.$screen.append(this.$stats);
+    this.$controls = this.$screen.find(".controls");
+    this.$timeline = this.$controls.find(".timeline");
+    this.$position = this.$timeline.find(".timeline-position");
+    this.$loaded = this.$timeline.find(".timeline-loaded");
+    this.$currentTick = this.$controls.find(".currentTick");
+    this.$tickCount = this.$controls.find(".tickCount");
     this.faded = false;
     QE.alpha = 0;
     this.$controls.find(".fullscreen-button").click(function () {
@@ -96,7 +96,6 @@ Player.prototype = {
         this.$currentTick.text(this.currentFrame);
         this.$tickCount.text(this.parser.totalTickCount);
         this.$loaded.width(this.parser.progress * 100 + "%");
-        this.$downloaded.width(this.parser.downloadProgress * 100 + "%");
         if (this.hideControlsTimeMs !== undefined && Date.now() > this.hideControlsTimeMs) {
             this.hideControlsTimeMs = undefined;
             this.hideControls();
