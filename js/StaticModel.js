@@ -1,5 +1,3 @@
-var StaticModel;
-
 if (QE.initialized) new function () {
     var gl = QE.glContext;
 
@@ -18,8 +16,7 @@ if (QE.initialized) new function () {
     });
 
     function StaticModel(array) {
-        this.count = array.byteLength / 32;
-        // array = new Float32Array(array);
+        this.count = array.byteLength / StaticModel.BYTES_PER_VERTEX;
         this.buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
         gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
@@ -30,12 +27,14 @@ if (QE.initialized) new function () {
         render: function (texture) {
             QE.useProgram(program);
             if (program.preparedModel !== this) {
-                gl.vertexAttribPointer(QE.getAttributeLocation(program, "attr_v"), 3, gl.FLOAT, false, 32, 0);
-                gl.vertexAttribPointer(QE.getAttributeLocation(program, "attr_n"), 3, gl.FLOAT, false, 32, 12);
-                gl.vertexAttribPointer(QE.getAttributeLocation(program, "attr_uv"), 2, gl.FLOAT, false, 32, 24);
+                gl.vertexAttribPointer(QE.getAttributeLocation(program, "attr_v"), 3, gl.FLOAT, false, 32, StaticModel.BYTE_V_OFFSET);
+                gl.vertexAttribPointer(QE.getAttributeLocation(program, "attr_n"), 3, gl.FLOAT, false, 32, StaticModel.BYTE_N_OFFSET);
+                gl.vertexAttribPointer(QE.getAttributeLocation(program, "attr_uv"), 2, gl.FLOAT, false, 32, StaticModel.BYTE_UV_OFFSET);
                 program.preparedModel = this;
             }
 
+            gl.enable(gl.CULL_FACE);
+            gl.cullFace(gl.BACK);
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.uniform1i(QE.getUniformLocation(program, "texture"), 0);
@@ -51,5 +50,15 @@ if (QE.initialized) new function () {
             }
         });
     };
+    StaticModel.FLOATS_PER_VERTEX = 8;
+    StaticModel.FLOAT_V_OFFSET = 0;
+    StaticModel.FLOAT_N_OFFSET = 3;
+    StaticModel.FLOAT_UV_OFFSET = 6;
+
+    StaticModel.BYTES_PER_VERTEX = StaticModel.FLOATS_PER_VERTEX * 4;
+    StaticModel.BYTE_V_OFFSET = StaticModel.FLOAT_V_OFFSET * 4;
+    StaticModel.BYTE_N_OFFSET = StaticModel.FLOAT_N_OFFSET * 4;
+    StaticModel.BYTE_UV_OFFSET = StaticModel.FLOAT_UV_OFFSET * 4;
+
     window.StaticModel = StaticModel;
 }();

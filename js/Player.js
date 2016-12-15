@@ -1,3 +1,5 @@
+Settings.HIDE_CONTROLS_DELAY_MS = 2000;
+
 function Player() {
     var player = this;
 
@@ -36,31 +38,7 @@ function Player() {
     this.hideControls();
 
     this.camera = new Camera(this);
-}
-
-var model;
-StaticModel.load("models/PineTree/PineTree.sm", function (res) {
-    model = res;
-});
-var textures = [];
-QE.loadTexture("models/PineTree/PineTree_1.png", function (res) {
-    textures.push(res);
-});
-QE.loadTexture("models/PineTree/PineTree_2.png", function (res) {
-    textures.push(res);
-});
-QE.loadTexture("models/PineTree/PineTree_3.png", function (res) {
-    textures.push(res);
-});
-
-var pos = [];
-var scale = [];
-var tts = [];
-for (var i = 0; i < 250; i++) {
-    var v = vec2.fromValues(Math.random() * 50 - 25, Math.random() * 50 - 25);
-    pos.push(v);
-    scale.push(Math.random() + 1);
-    tts.push(Math.floor(Math.random() * 3));
+    this.trees = new Trees(this);
 }
 
 Player.prototype = {
@@ -89,13 +67,7 @@ Player.prototype = {
         this.stats.update();
 
         this.camera.update(deltaTime);
-        QE.useProgram(staticModelProgram);
-        QE.glContext.uniformMatrix4fv(QE.getUniformLocation(staticModelProgram, "projectionMatrix"), false, this.camera.matrix);
-        for (var i = 0, l = pos.length; i < l; i++) {
-            QE.glContext.uniform2fv(QE.getUniformLocation(window.staticModelProgram, "position"), pos[i]);
-            QE.glContext.uniform1f(QE.getUniformLocation(window.staticModelProgram, "scale"), scale[i]);
-            model.render(textures[tts[i]]);
-        }
+        this.trees.render(deltaTime);
     },
     updateHtml: function () {
         this.$position.css("left", this.currentFrame * 100 / this.parser.totalTickCount + "%");
