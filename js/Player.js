@@ -39,6 +39,7 @@ function Player() {
 
     this.camera = new Camera(this);
     this.trees = new Trees(this);
+    this.ground = new Ground(this);
 }
 
 Player.prototype = {
@@ -67,6 +68,7 @@ Player.prototype = {
         this.stats.update();
 
         this.camera.update(deltaTime);
+        this.ground.render(deltaTime);
         this.trees.render(deltaTime);
     },
     updateHtml: function () {
