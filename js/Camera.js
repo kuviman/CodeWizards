@@ -63,6 +63,10 @@ function Camera(player) {
             return false;
         }
     });
+    $canvas.on("wheel", function (e) {
+        camera.height *= (1 + Math.max(Math.min(e.originalEvent.deltaY, 1), -1) / 10);
+        return false;
+    });
 }
 
 Camera.prototype = {
