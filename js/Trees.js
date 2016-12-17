@@ -96,5 +96,8 @@ Trees.prototype = {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers[json.treeTexture]);
         gl.bufferSubData(gl.ARRAY_BUFFER, this.treeCounts[json.treeTexture] * data.byteLength, data);
         this.treeCounts[json.treeTexture]++;
+    },
+    reset: function () {
+        // TODO
     }
 };

@@ -5,8 +5,6 @@ function Camera(player) {
     this.player = player;
 
     this.matrix = mat4.create();
-    this.height = 500;
-    this.lookPos = vec2.fromValues(Settings.WORLD_SIZE / 2, Settings.WORLD_SIZE / 2);
 
     this.startDrag = undefined;
     this.startZoom = undefined;
@@ -139,5 +137,9 @@ Camera.prototype = {
     onFinishZoom: function () {
         $(QE.canvas).css("cursor", "default");
         this.startZoom = undefined;
+    },
+    reset: function () {
+        this.height = 500;
+        this.lookPos = vec2.fromValues(Settings.WORLD_SIZE / 2, Settings.WORLD_SIZE / 2);
     }
 };

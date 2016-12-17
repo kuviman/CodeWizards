@@ -93,6 +93,10 @@ Player.prototype = {
         });
         this.currentFrame = 0;
         this.timeTillNextFrame = 0;
+
+        this.camera.reset();
+        this.trees.reset();
+        this.ground.reset();
     },
     hideControls: function () {
         this.$controls.animate({bottom: "-32px"}, 200);

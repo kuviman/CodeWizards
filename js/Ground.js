@@ -49,5 +49,8 @@ Ground.prototype = {
         gl.bindTexture(gl.TEXTURE_2D, this.roadmapTexture);
         gl.uniform1i(QE.getUniformLocation(this.program, "roadmap"), 2);
         gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+    },
+    reset: function () {
+        // Nothing to do
     }
 };
