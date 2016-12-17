@@ -33,26 +33,57 @@ function Trees(player) {
         trees.program = QE.shaderProgram(vertexShader, fragmentShader);
 
         trees.buffers = [];
+        trees.jsonsByType = [];
         for (var i = 0; i < trees.textures.length; i++) {
             trees.buffers[i] = gl.createBuffer();
+            trees.jsonsByType[i] = [];
             gl.bindBuffer(gl.ARRAY_BUFFER, trees.buffers[i]);
             gl.bufferData(gl.ARRAY_BUFFER, trees.modelData.byteLength * Settings.MAX_TREE_COUNT, gl.STATIC_DRAW);
         }
-        trees.treeCounts = new Array(trees.textures.length);
-        trees.treeCounts.fill(0);
-        for (var i = 0; i < 1000; i++) {
-            trees.addTree({
-                x: Math.random() * Settings.WORLD_SIZE,
-                y: Math.random() * Settings.WORLD_SIZE,
-                radius: Math.random() * 20 + 40
-            });
-        }
     });
+
+    Parser.parsers.push(this);
 }
 
 Trees.prototype = {
     constructor: Trees,
+    goToNeededFrame: function () {
+        var needFrame = this.player.currentFrame;
+        var events = this.events;
+        var eventsFrame = this.eventsFrame;
+        while (eventsFrame < needFrame) {
+            eventsFrame++;
+            var es = events[eventsFrame];
+            if (es) {
+                for (var i = 0, l = es.length; i < l; i++) {
+                    var e = es[i];
+                    if (e.type === +1) {
+                        this.addTree(e.id);
+                    } else {
+                        this.removeTree(e.id);
+                    }
+                }
+            }
+        }
+        while (eventsFrame > needFrame) {
+            var es = events[eventsFrame];
+            if (es) {
+                for (var i = 0, l = es.length; i < l; i++) {
+                    var e = es[i];
+                    if (e.type === +1) {
+                        this.removeTree(e.id);
+                    } else {
+                        this.addTree(e.id, e.json);
+                    }
+                }
+            }
+            eventsFrame--;
+        }
+        this.eventsFrame = eventsFrame;
+    },
     render: function (deltaTime) {
+        this.goToNeededFrame();
+
         var gl = QE.glContext;
         QE.useProgram(this.program);
         gl.enable(gl.CULL_FACE);
@@ -61,29 +92,47 @@ Trees.prototype = {
         gl.uniform1i(QE.getUniformLocation(this.program, "texture"), 0);
         gl.activeTexture(gl.TEXTURE0);
         for (var i = 0; i < this.textures.length; i++) {
-            gl.bindTexture(gl.TEXTURE_2D, this.textures[i]);
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers[i]);
-            gl.vertexAttribPointer(QE.getAttributeLocation(this.program, "attr_v"), 3, gl.FLOAT, false, 32, StaticModel.BYTE_V_OFFSET);
-            gl.vertexAttribPointer(QE.getAttributeLocation(this.program, "attr_n"), 3, gl.FLOAT, false, 32, StaticModel.BYTE_N_OFFSET);
-            gl.vertexAttribPointer(QE.getAttributeLocation(this.program, "attr_uv"), 2, gl.FLOAT, false, 32, StaticModel.BYTE_UV_OFFSET);
-            if (this.treeCounts[i] != 0) {
-                gl.drawArrays(gl.TRIANGLES, 0, this.modelVertexCount * this.treeCounts[i]);
+            var count = this.jsonsByType[i].length;
+            if (count != 0) {
+                gl.bindTexture(gl.TEXTURE_2D, this.textures[i]);
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers[i]);
+                gl.vertexAttribPointer(QE.getAttributeLocation(this.program, "attr_v"), 3, gl.FLOAT, false, 32, StaticModel.BYTE_V_OFFSET);
+                gl.vertexAttribPointer(QE.getAttributeLocation(this.program, "attr_n"), 3, gl.FLOAT, false, 32, StaticModel.BYTE_N_OFFSET);
+                gl.vertexAttribPointer(QE.getAttributeLocation(this.program, "attr_uv"), 2, gl.FLOAT, false, 32, StaticModel.BYTE_UV_OFFSET);
+                gl.drawArrays(gl.TRIANGLES, 0, this.modelVertexCount * count);
             }
         }
     },
-    addTree: function (json) {
+    addTree: function (id) {
+        var json = this.jsonById[id];
         if (!json.treeTexture) {
             json.treeTexture = Math.floor(Math.random() * this.textures.length);
         }
-        if (this.treeCounts[json.treeTexture] >= Settings.MAX_TREE_COUNT) {
+        var array = this.jsonsByType[json.treeTexture];
+        if (array.length >= Settings.MAX_TREE_COUNT) {
             throw new Error("Max tree count exceeded");
         }
-        var data = new Float32Array(this.modelData);
-
+        json.indexOfType = array.length;
+        array.push(json);
+        this.updateInBuffer(json);
+    },
+    removeTree: function (id) {
+        var json = this.jsonById[id];
+        var array = this.jsonsByType[json.treeTexture];
+        if (json.indexOfType != array.length - 1) {
+            var otherJson = array[array.length - 1];
+            otherJson.indexOfType = json.indexOfType;
+            array[json.indexOfType] = otherJson;
+            this.updateInBuffer(otherJson);
+        }
+        array.pop();
+    },
+    updateInBuffer: function (json) {
         var x = json.x;
         var y = json.y;
         var radius = json.radius;
 
+        var data = new Float32Array(this.modelData);
         var offset = StaticModel.FLOAT_V_OFFSET;
         for (var i = 0; i < this.modelVertexCount; i++) {
             data[offset] = data[offset] * radius + x;
@@ -94,10 +143,56 @@ Trees.prototype = {
 
         var gl = QE.glContext;
         gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers[json.treeTexture]);
-        gl.bufferSubData(gl.ARRAY_BUFFER, this.treeCounts[json.treeTexture] * data.byteLength, data);
-        this.treeCounts[json.treeTexture]++;
+        gl.bufferSubData(gl.ARRAY_BUFFER, json.indexOfType * data.byteLength, data);
     },
     reset: function () {
-        // TODO
+        this.currentIds = {};
+        this.events = {};
+        this.eventsFrame = -1;
+        this.jsonById = {};
+        if (this.jsonsByType) {
+            for (var i = 0; i < this.jsonsByType.length; i++) {
+                this.jsonsByType[i] = [];
+            }
+        }
+    },
+    parse: function (json) {
+        var units = json.trees;
+        if (!units) {
+            return;
+        }
+        var currentIds = this.currentIds;
+        var newEvents = [];
+        for (var i = 0, l = units.length; i < l; i++) {
+            var unit = units[i];
+            var id = unit.id;
+            if (currentIds[id]) {
+                delete currentIds[id];
+            } else {
+                this.jsonById[id] = {
+                    x: unit.x,
+                    y: unit.y,
+                    radius: unit.radius
+                };
+                newEvents.push({
+                    type: +1,
+                    id: id
+                });
+            }
+        }
+        for (var id in currentIds) {
+            newEvents.push({
+                type: -1,
+                id: id
+            });
+        }
+        currentIds = {};
+        for (var i = 0, l = units.length; i < l; i++) {
+            currentIds[units[i].id] = true;
+        }
+        this.currentIds = currentIds;
+        if (newEvents.length != 0) {
+            this.events[json.tickIndex] = newEvents;
+        }
     }
 };

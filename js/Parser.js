@@ -10,7 +10,6 @@ function Parser(url, metaUrl) {
         var meta = JSON.parse(data);
         parser.totalTickCount = meta.frameCount;
     });
-    this.parsers = [];
     this.loadedTickCount = 0;
     this.__defineGetter__("progress", function () {
         return this.loadedTickCount / this.totalTickCount;
@@ -26,7 +25,7 @@ Parser.prototype = {
     constructor: Parser,
     parse: function (json) {
         this.loadedTickCount++;
-        var parsers = this.parsers;
+        var parsers = Parser.parsers;
         for (var i = 0, l = parsers.length; i < l; i++) {
             parsers[i].parse(json);
         }
@@ -38,3 +37,4 @@ Parser.prototype = {
         this.reader.onDownloaded(handler);
     }
 };
+Parser.parsers = [];

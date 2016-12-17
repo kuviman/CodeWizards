@@ -12,7 +12,7 @@ function Player() {
     this.$timeline = this.$controls.find(".timeline");
     this.$position = this.$timeline.find(".timeline-position");
     this.$loaded = this.$timeline.find(".timeline-loaded");
-    this.$currentTick = this.$controls.find(".currentTick");
+    this.$currentTick = this.$controls.find(".currentFrame");
     this.$tickCount = this.$controls.find(".tickCount");
 
     this.faded = false;
@@ -55,21 +55,19 @@ Player.prototype = {
             }
         }
         if (0 <= this.currentFrame && this.currentFrame < this.parser.loadedTickCount) {
-            // render frame
-        }
+            this.camera.update(deltaTime);
+            this.ground.render(deltaTime);
+            this.trees.render(deltaTime);
 
-        if (!this.faded) {
-            QE.alpha = Math.min(QE.alpha + deltaTime * 3, 1);
-            if (QE.alpha == 1) {
-                this.$codewizards.addClass("game-running");
-                this.faded = true;
+            if (!this.faded) {
+                QE.alpha = Math.min(QE.alpha + deltaTime * 3, 1);
+                if (QE.alpha == 1) {
+                    this.$codewizards.addClass("game-running");
+                    this.faded = true;
+                }
             }
         }
         this.stats.update();
-
-        this.camera.update(deltaTime);
-        this.ground.render(deltaTime);
-        this.trees.render(deltaTime);
     },
     updateHtml: function () {
         this.$position.css("left", this.currentFrame * 100 / this.parser.totalTickCount + "%");
