@@ -18,6 +18,7 @@ import java.util.*;
  */
 public class ParserOBJ {
     static double xScale = 1, yScale = 1, zScale = 1;
+
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {
             System.err.println("Expected 2 args");
@@ -27,6 +28,12 @@ public class ParserOBJ {
             xScale = 1 / Double.parseDouble(args[2]);
             yScale = 1 / Double.parseDouble(args[3]);
             zScale = 1 / Double.parseDouble(args[4]);
+        }
+        if (args.length >= 6) {
+            double s = Double.parseDouble(args[5]);
+            xScale *= s;
+            yScale *= s;
+            zScale *= s;
         }
 
         List<Vec3d> v = new ArrayList<>();

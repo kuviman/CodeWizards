@@ -16,6 +16,9 @@ function Ground(player) {
     QE.loadTexture("textures/grass.png", function (texture) {
         ground.grassTexture = texture;
     });
+    QE.loadTexture("textures/stone.png", function (texture) {
+        ground.stoneTexture = texture;
+    });
     QE.loadTexture("textures/roadmap.png", function (texture) {
         ground.roadmapTexture = texture;
     });
@@ -46,8 +49,11 @@ Ground.prototype = {
         gl.bindTexture(gl.TEXTURE_2D, this.dirtTexture);
         gl.uniform1i(QE.getUniformLocation(this.program, "dirt"), 1);
         gl.activeTexture(gl.TEXTURE2);
+        gl.bindTexture(gl.TEXTURE_2D, this.stoneTexture);
+        gl.uniform1i(QE.getUniformLocation(this.program, "stone"), 2);
+        gl.activeTexture(gl.TEXTURE3);
         gl.bindTexture(gl.TEXTURE_2D, this.roadmapTexture);
-        gl.uniform1i(QE.getUniformLocation(this.program, "roadmap"), 2);
+        gl.uniform1i(QE.getUniformLocation(this.program, "roadmap"), 3);
         gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
     },
     reset: function () {

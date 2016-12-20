@@ -15,6 +15,5 @@ void main() {
     uv = vec2(attr_uv.x, 1.0 - attr_uv.y);
     vec3 v = attr_v * scale;
     v.xz += position;
-    v.y *= 3.0;
     gl_Position = projectionMatrix * vec4(v, 1.0);
 }

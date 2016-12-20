@@ -73,7 +73,7 @@ Trees.prototype = {
                     if (e.type === +1) {
                         this.removeTree(e.id);
                     } else {
-                        this.addTree(e.id, e.json);
+                        this.addTree(e.id);
                     }
                 }
             }

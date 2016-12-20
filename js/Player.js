@@ -40,6 +40,7 @@ function Player() {
     this.camera = new Camera(this);
     this.trees = new Trees(this);
     this.ground = new Ground(this);
+    this.buildings = new Buildings(this);
 }
 
 Player.prototype = {
@@ -58,6 +59,7 @@ Player.prototype = {
             this.camera.update(deltaTime);
             this.ground.render(deltaTime);
             this.trees.render(deltaTime);
+            this.buildings.render(deltaTime);
 
             if (!this.faded) {
                 QE.alpha = Math.min(QE.alpha + deltaTime * 3, 1);
@@ -94,6 +96,7 @@ Player.prototype = {
 
         this.camera.reset();
         this.trees.reset();
+        this.buildings.reset();
         this.ground.reset();
     },
     hideControls: function () {

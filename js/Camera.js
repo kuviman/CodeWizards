@@ -1,4 +1,4 @@
-Settings.CAMERA_Z_OFFSET = 100;
+Settings.CAMERA_Z_OFFSET = 250;
 
 function Camera(player) {
     var camera = this;
@@ -72,7 +72,7 @@ function Camera(player) {
 Camera.prototype = {
     constructor: Camera,
     update: function (deltaTime) {
-        mat4.perspective(this.matrix, Math.PI / 2, QE.canvas.width / QE.canvas.height, 0.1, 5000);
+        mat4.perspective(this.matrix, Math.PI / 4, QE.canvas.width / QE.canvas.height, 0.1, 5000);
         mat4.multiply(this.matrix, this.matrix, mat4.lookAt(mat4.create(),
             vec3.fromValues(this.lookPos[0], this.height, this.lookPos[1] + Settings.CAMERA_Z_OFFSET),
             vec3.fromValues(this.lookPos[0], 0, this.lookPos[1]), vec3.fromValues(0, 1, 0)));
